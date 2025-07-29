@@ -6,7 +6,7 @@ import re
 import base64
 
 FILENAME = "player_data.json"
-IMAGE_PATH = "C:/Users/AFNANKHAN/Desktop/New folder/37d996fda81dfe7c322617fdc5d2c16c.jpg"
+IMAGE_PATH = "C:/Users/AFNANKHAN/Desktop/Game/37d996fda81dfe7c322617fdc5d2c16c.jpg"
 COMPUTER_NAMES = ["Sara", "Zara", "Ayaan", "Mehul", "Nikita", "Zoya", "Riyaan", "Arjun", "Kritika", "Zaid", "Ishita"]
 
 # Encode image to base64
