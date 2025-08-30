@@ -252,7 +252,7 @@ def play_game(email, user_guess, user_bet):
             system_answer[idx] = random.choice([1, 2, 3])
 
     # --- Reward calculation ---
-if correct == 1:
+    if correct == 1:
     reward = round(user_bet * 0.25, 2)
 elif correct == 2:
     reward = round(user_bet * 0.50, 2)
@@ -376,6 +376,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
