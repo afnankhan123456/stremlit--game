@@ -252,15 +252,14 @@ def play_game(email, user_guess, user_bet):
             system_answer[idx] = random.choice([1, 2, 3])
 
     # --- Reward calculation ---
-    if correct == 1:
-        reward = round(user_bet * 0.25, 2)
-    elif correct == 2:
-        reward = round(user_bet * 0.50, 2)
-    elif correct == 3:
-        reward = round(user_bet * 2, 2)
-        st.success("🎉 All 3 guesses are correct! You win double the bet!")
-    
-        # Multiple coins animation
+if correct == 1:
+    reward = round(user_bet * 0.25, 2)
+elif correct == 2:
+    reward = round(user_bet * 0.50, 2)
+elif correct == 3:
+    reward = round(user_bet * 2, 2)
+    st.success("🎉 All 3 guesses are correct! You win double the bet!")
+
     coins_html = """
     <div class="coins-container"></div>
     <style>
@@ -299,8 +298,8 @@ def play_game(email, user_guess, user_bet):
     </script>
     """
     st.markdown(coins_html, unsafe_allow_html=True)
-    else:
-        reward = 0
+else:
+    reward = 0
 
     # --- Store result ---
     result = {
@@ -377,6 +376,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
