@@ -250,50 +250,50 @@ def play_game(email, user_guess, user_bet):
             system_answer[idx] = random.choice([1, 2, 3])
     
     # --- Reward calculation ---
-    if correct == 1:
-        reward = round(user_bet * 0.25, 2)
-    elif correct == 2:
-        reward = round(user_bet * 0.50, 2)
-    elif correct == 3:
-        reward = round(user_bet * 2, 2)
-        st.success("🎉 All 3 guesses are correct! You win double the bet!")
+if correct == 1:
+    reward = round(user_bet * 0.25, 2)
+elif correct == 2:
+    reward = round(user_bet * 0.50, 2)
+elif correct == 3:
+    reward = round(user_bet * 2, 2)
+    st.success("🎉 All 3 guesses are correct! You win double the bet!")
 
-# Coins animation
-coins_html = """
-<div class="coins"></div>
-<style>
-.coins {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  margin: 50px auto;
-}
-.coins::before {
-  content: '💵💵💵💵💵';
-  position: absolute;
-  font-size: 24px;
-  animation: fly 1.5s ease-out forwards;
-  transform: translateY(0);
-  opacity: 1;
-  left: 0;
-  top: 0;
-}
-@keyframes fly {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-200px) rotate(360deg);
-    opacity: 0;
-  }
-}
-</style>
-"""
-st.markdown(coins_html, unsafe_allow_html=True)
+    # Coins animation
+    coins_html = """
+    <div class="coins"></div>
+    <style>
+    .coins {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 50px auto;
+    }
+    .coins::before {
+      content: '💵💵💵💵💵';
+      position: absolute;
+      font-size: 24px;
+      animation: fly 1.5s ease-out forwards;
+      transform: translateY(0);
+      opacity: 1;
+      left: 0;
+      top: 0;
+    }
+    @keyframes fly {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-200px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    </style>
+    """
+    st.markdown(coins_html, unsafe_allow_html=True)
+else:
+    reward = 0
 
-    else:
-        reward = 0
 
     # Store result
     result = {
@@ -371,6 +371,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
