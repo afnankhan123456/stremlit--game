@@ -26,7 +26,7 @@ def get_base64_image(image_source):
             return base64.b64encode(f.read()).decode()
 
 def is_valid_name(name):
-    return re.match("^[A-Za-z]+([ _][A-Za-z]+)?$", name) is not None
+    return re.match("^[A-Za-z]+$", name) is not None
 
 def is_valid_email(email):
     return re.match(r"^[\w\.-]+@gmail\.com$", email) is not None
@@ -86,8 +86,18 @@ if not st.session_state.otp_verified:
         unsafe_allow_html=True
     )
 
-# --- UI Setup ---
+# --- FUNCTIONS ---
+def get_base64_image(url):
+    """Fetch image from URL and return as base64."""
+    response = requests.get(url)
+    return base64.b64encode(response.content).decode()
+
+# --- UI ---
+
+# Logo image URL
 image_url = "https://raw.githubusercontent.com/afnankhan123456/stremlit--game/main/1st%20logo.jpg"
+
+# Chhota logo as base64 for inline HTML
 img_base64 = get_base64_image(image_url)
 
 st.markdown(f"""
@@ -97,6 +107,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
+# Reward image
 REWARD_IMAGE_URL = "https://raw.githubusercontent.com/afnankhan123456/stremlit--game/main/2nd%20logo.jpg"
 reward_img_base64 = get_base64_image(REWARD_IMAGE_URL)
 
@@ -112,6 +123,8 @@ st.markdown(f"""
         </div>
     </div>
 """, unsafe_allow_html=True)
+
+
 
 # --- MAIN INTERFACE ---
 with st.container():
@@ -159,23 +172,63 @@ with st.container():
                 else:
                     st.error("❌ Incorrect OTP. Try again.")
 
-# --- User Data Storage ---
-file_path = "/tmp/login_data.json"
+
+# # --- Step 4: Full background update after OTP verified ---
+# if st.session_state.otp_verified:
+#     IMAGE_URL2 = "https://raw.githubusercontent.com/afnankhan123456/stremlit--game/main/2nd%20background.jpg"
+#     next_img_base64 = get_base64_image(IMAGE_URL2)
+
+#     st.markdown(
+#         f"""
+#         <style>
+#         .stApp {{
+#             background-image: url("data:image/jpeg;base64,{next_img_base64}");
+#             background-size: cover;
+#             background-repeat: no-repeat;
+#             background-attachment: fixed;
+#         }}
+#         </style>
+#         """,
+#         unsafe_allow_html=True
+#     )
+
+#     st.markdown("<h2 style='color:white; text-align:center; margin-top: 200px;'>", unsafe_allow_html=True)
+
+# --- File path where login data is stored ---
+file_path = "/tmp/login_data.json"  # Temporary storage for deployment
+
+# Load existing data if file exists
 if os.path.exists(file_path):
     with open(file_path, "r") as f:
         login_data = json.load(f)
 else:
     login_data = {}
 
+# This block runs only after OTP verification
 if st.session_state.get("otp_verified", False):
     email = st.session_state.user_email
+
+    # Increase login count
     login_data[email] = login_data.get(email, 0) + 1
+
+    # Save updated login count
     with open(file_path, "w") as f:
         json.dump(login_data, f)
 
+    # --- Store users data in memory ---
     if "users" not in st.session_state:
         st.session_state.users = {}
+
     users = st.session_state.users
+
+    import streamlit as st
+import random
+
+# --- User Data Storage ---
+if "users" not in st.session_state:
+    st.session_state.users = {}
+
+users = st.session_state.users
 
 # --- Game Logic Functions ---
 def get_winning_rounds(base=0):
@@ -188,9 +241,10 @@ def get_min_bet(email, upto_round):
     prev_bets = [g['amount'] for g in users[email]['games'] if g['round'] < upto_round]
     if prev_bets:
         min_bet = min(prev_bets)
-        return round(min_bet * 1.5, 2)
+        return round(min_bet * 1.5, 2)   # 1.5x wali logic
     else:
         return 0
+
 
 def play_game(email, user_guess, user_bet):
     if email not in users:
@@ -198,21 +252,25 @@ def play_game(email, user_guess, user_bet):
 
     round_no = len(users[email]['games']) + 1
     total_games = len(users[email]['games'])
+
     base = (total_games // 20) * 20
     winning_rounds = get_winning_rounds(base)
 
     if round_no in winning_rounds:
         min_bet = get_min_bet(email, round_no)
         user_bet = min_bet
+        # --- Always win full round ---
         system_answer = user_guess.copy()
         correct = 3
     else:
-        correct = random.choice([1, 2])
+        # --- Force 1 or 2 correct only ---
+        import random
+        correct = random.choice([1, 2])  
         system_answer = user_guess.copy()
-        for i in range(3 - correct):
+        for i in range(3 - correct):   # remove some correct answers
             idx = random.choice(range(3))
             system_answer[idx] = random.choice([1, 2, 3])
-
+    
     # --- Reward calculation ---
     if correct == 1:
         reward = round(user_bet * 0.25, 2)
@@ -220,46 +278,43 @@ def play_game(email, user_guess, user_bet):
         reward = round(user_bet * 0.50, 2)
     elif correct == 3:
         reward = round(user_bet * 2, 2)
+    # else:
+    #     reward = 0
         st.success("🎉 All 3 guesses are correct! You win double the bet!")
+        st.balloons()
 
-        coins_html = """
-        <div class="coins-container"></div>
+        explosion_html = """
+        <div class="explosion"></div>
         <style>
-        .coins-container {
+        .explosion {
           position: relative;
-          width: 100%;
-          height: 200px;
-          overflow: visible;
+          width: 100px;
+          height: 100px;
+          margin: 50px auto;
         }
-        .coin {
+        .explosion::before {
+          content: '';
           position: absolute;
-          font-size: 24px;
-          animation: fly 2s linear forwards;
+          width: 200px;
+          height: 200px;
+          background: radial-gradient(circle, red, orange, yellow, white);
+          border-radius: 50%;
+          animation: boom 0.7s ease-out forwards;
+          transform: scale(0);
+          opacity: 0.8;
+          left: -50px;
+          top: -50px;
+          z-index: 999;
         }
-        @keyframes fly {
-          0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-300px) rotate(720deg);
+        @keyframes boom {
+          to {
+            transform: scale(2);
             opacity: 0;
           }
         }
         </style>
-        <script>
-        const container = document.querySelector('.coins-container');
-        for (let i = 0; i < 30; i++) {
-            const coin = document.createElement('div');
-            coin.className = 'coin';
-            coin.textContent = '💵';
-            coin.style.left = Math.random() * 80 + '%';
-            coin.style.animationDelay = (Math.random() * 2) + 's';
-            container.appendChild(coin);
-        }
-        </script>
         """
-        st.markdown(coins_html, unsafe_allow_html=True)
+        st.markdown(explosion_html, unsafe_allow_html=True)
     else:
         reward = 0
 
@@ -277,6 +332,7 @@ def play_game(email, user_guess, user_bet):
     return result
 
 
+import streamlit as st
 
 # --- User Data Storage ---
 if "users" not in st.session_state:
@@ -338,15 +394,6 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
-
-
-
-
-
-
-
-
-
 
 
 
