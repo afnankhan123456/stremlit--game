@@ -26,7 +26,7 @@ def get_base64_image(image_source):
             return base64.b64encode(f.read()).decode()
 
 def is_valid_name(name):
-    return re.match("^[A-Za-z]+$", name) is not None
+    return re.match("^[A-Za-z]+([ _][A-Za-z]+)?$", name) is not None
 
 def is_valid_email(email):
     return re.match(r"^[\w\.-]+@gmail\.com$", email) is not None
@@ -394,6 +394,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
