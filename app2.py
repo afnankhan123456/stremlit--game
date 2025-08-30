@@ -259,7 +259,7 @@ def play_game(email, user_guess, user_bet):
     elif correct == 3:
         reward = round(user_bet * 2, 2)
         st.success("🎉 All 3 guesses are correct! You win double the bet!")
-
+    
         # Coins animation
         coins_html = """
         <div class="coins"></div>
@@ -296,11 +296,7 @@ def play_game(email, user_guess, user_bet):
     else:
         reward = 0
 
-    return reward, system_answer
-
-
-
-    # Store result
+    # --- Store result ---
     result = {
         "round": round_no,
         "guess": user_guess,
@@ -311,10 +307,9 @@ def play_game(email, user_guess, user_bet):
     }
     users[email]['games'].append(result)
 
+    # --- Return the result ---
     return result
 
-
-import streamlit as st
 
 # --- User Data Storage ---
 if "users" not in st.session_state:
@@ -376,6 +371,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
