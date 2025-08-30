@@ -212,8 +212,10 @@ users = st.session_state.users
 def get_winning_rounds(base=0):
     return [base + i for i in [4, 9, 15, 20]]
 
+
 def count_correct(user_guess, system_answer):
     return sum([user_guess[i] == system_answer[i] for i in range(3)])
+
 
 def get_min_bet(email, upto_round):
     prev_bets = [g['amount'] for g in users[email]['games'] if g['round'] < upto_round]
@@ -248,51 +250,54 @@ def play_game(email, user_guess, user_bet):
         for i in range(3 - correct):   # remove some correct answers
             idx = random.choice(range(3))
             system_answer[idx] = random.choice([1, 2, 3])
-    
-    # --- Reward calculation ---
-if correct == 1:
-    reward = round(user_bet * 0.25, 2)
-elif correct == 2:
-    reward = round(user_bet * 0.50, 2)
-elif correct == 3:
-    reward = round(user_bet * 2, 2)
-    st.success("🎉 All 3 guesses are correct! You win double the bet!")
 
-    # Coins animation
-    coins_html = """
-    <div class="coins"></div>
-    <style>
-    .coins {
-      position: relative;
-      width: 100px;
-      height: 100px;
-      margin: 50px auto;
-    }
-    .coins::before {
-      content: '💵💵💵💵💵';
-      position: absolute;
-      font-size: 24px;
-      animation: fly 1.5s ease-out forwards;
-      transform: translateY(0);
-      opacity: 1;
-      left: 0;
-      top: 0;
-    }
-    @keyframes fly {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-200px) rotate(360deg);
-        opacity: 0;
-      }
-    }
-    </style>
-    """
-    st.markdown(coins_html, unsafe_allow_html=True)
-else:
-    reward = 0
+    # --- Reward calculation ---
+    if correct == 1:
+        reward = round(user_bet * 0.25, 2)
+    elif correct == 2:
+        reward = round(user_bet * 0.50, 2)
+    elif correct == 3:
+        reward = round(user_bet * 2, 2)
+        st.success("🎉 All 3 guesses are correct! You win double the bet!")
+
+        # Coins animation
+        coins_html = """
+        <div class="coins"></div>
+        <style>
+        .coins {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          margin: 50px auto;
+        }
+        .coins::before {
+          content: '💵💵💵💵💵';
+          position: absolute;
+          font-size: 24px;
+          animation: fly 1.5s ease-out forwards;
+          transform: translateY(0);
+          opacity: 1;
+          left: 0;
+          top: 0;
+        }
+        @keyframes fly {
+          0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-200px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        </style>
+        """
+        st.markdown(coins_html, unsafe_allow_html=True)
+    else:
+        reward = 0
+
+    return reward, system_answer
+
 
 
     # Store result
@@ -371,6 +376,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
