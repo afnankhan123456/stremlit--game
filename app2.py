@@ -260,39 +260,45 @@ def play_game(email, user_guess, user_bet):
         reward = round(user_bet * 2, 2)
         st.success("🎉 All 3 guesses are correct! You win double the bet!")
     
-        # Coins animation
-        coins_html = """
-        <div class="coins"></div>
-        <style>
-        .coins {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          margin: 50px auto;
-        }
-        .coins::before {
-          content: '💵💵💵💵💵';
-          position: absolute;
-          font-size: 24px;
-          animation: fly 1.5s ease-out forwards;
-          transform: translateY(0);
-          opacity: 1;
-          left: 0;
-          top: 0;
-        }
-        @keyframes fly {
-          0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-200px) rotate(360deg);
-            opacity: 0;
-          }
-        }
-        </style>
-        """
-        st.markdown(coins_html, unsafe_allow_html=True)
+        # Multiple coins animation
+    coins_html = """
+    <div class="coins-container"></div>
+    <style>
+    .coins-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      overflow: visible;
+    }
+    .coin {
+      position: absolute;
+      font-size: 24px;
+      animation: fly 2s linear forwards;
+    }
+    @keyframes fly {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-300px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    </style>
+    <script>
+    const container = document.querySelector('.coins-container');
+    for (let i = 0; i < 30; i++) {  // 30 coins
+        const coin = document.createElement('div');
+        coin.className = 'coin';
+        coin.textContent = '💵';
+        coin.style.left = Math.random() * 80 + '%';  // random x position
+        coin.style.animationDelay = (Math.random() * 2) + 's';  // random start
+        container.appendChild(coin);
+    }
+    </script>
+    """
+    st.markdown(coins_html, unsafe_allow_html=True)
     else:
         reward = 0
 
@@ -371,6 +377,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
