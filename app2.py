@@ -173,28 +173,6 @@ with st.container():
                     st.error("❌ Incorrect OTP. Try again.")
 
 
-# # --- Step 4: Full background update after OTP verified ---
-# if st.session_state.otp_verified:
-#     IMAGE_URL2 = "https://raw.githubusercontent.com/afnankhan123456/stremlit--game/main/2nd%20background.jpg"
-#     next_img_base64 = get_base64_image(IMAGE_URL2)
-
-#     st.markdown(
-#         f"""
-#         <style>
-#         .stApp {{
-#             background-image: url("data:image/jpeg;base64,{next_img_base64}");
-#             background-size: cover;
-#             background-repeat: no-repeat;
-#             background-attachment: fixed;
-#         }}
-#         </style>
-#         """,
-#         unsafe_allow_html=True
-#     )
-
-#     st.markdown("<h2 style='color:white; text-align:center; margin-top: 200px;'>", unsafe_allow_html=True)
-
-# --- File path where login data is stored ---
 file_path = "/tmp/login_data.json"  # Temporary storage for deployment
 
 # Load existing data if file exists
@@ -278,43 +256,42 @@ def play_game(email, user_guess, user_bet):
         reward = round(user_bet * 0.50, 2)
     elif correct == 3:
         reward = round(user_bet * 2, 2)
-    # else:
-    #     reward = 0
         st.success("🎉 All 3 guesses are correct! You win double the bet!")
-        st.balloons()
 
-        explosion_html = """
-        <div class="explosion"></div>
-        <style>
-        .explosion {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          margin: 50px auto;
-        }
-        .explosion::before {
-          content: '';
-          position: absolute;
-          width: 200px;
-          height: 200px;
-          background: radial-gradient(circle, red, orange, yellow, white);
-          border-radius: 50%;
-          animation: boom 0.7s ease-out forwards;
-          transform: scale(0);
-          opacity: 0.8;
-          left: -50px;
-          top: -50px;
-          z-index: 999;
-        }
-        @keyframes boom {
-          to {
-            transform: scale(2);
-            opacity: 0;
-          }
-        }
-        </style>
-        """
-        st.markdown(explosion_html, unsafe_allow_html=True)
+# Coins animation
+coins_html = """
+<div class="coins"></div>
+<style>
+.coins {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 50px auto;
+}
+.coins::before {
+  content: '💵💵💵💵💵';
+  position: absolute;
+  font-size: 24px;
+  animation: fly 1.5s ease-out forwards;
+  transform: translateY(0);
+  opacity: 1;
+  left: 0;
+  top: 0;
+}
+@keyframes fly {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-200px) rotate(360deg);
+    opacity: 0;
+  }
+}
+</style>
+"""
+st.markdown(coins_html, unsafe_allow_html=True)
+
     else:
         reward = 0
 
@@ -394,6 +371,7 @@ if st.session_state.get("otp_verified"):
             st.success(f"Answer: {result['answer']}")
             st.info(f"Correct Guesses: {result['correct']}")
             st.success(f"Reward Earned: ₹{result['reward']}")
+
 
 
 
